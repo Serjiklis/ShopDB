@@ -1,0 +1,8 @@
+{
+    "dejavu sans": {
+        "bold": "\/home\/serhii-masliievych\/PhpstormProjects\/ShopDB\/vendor\/dompdf\/dompdf\/lib\/fonts\/DejaVuSans-Bold",
+        "bold_italic": "\/home\/serhii-masliievych\/PhpstormProjects\/ShopDB\/vendor\/dompdf\/dompdf\/lib\/fonts\/DejaVuSans-BoldOblique",
+        "italic": "\/home\/serhii-masliievych\/PhpstormProjects\/ShopDB\/vendor\/dompdf\/dompdf\/lib\/fonts\/DejaVuSans-Oblique",
+        "normal": "dejavu_sans_normal_f65aafbc183a0b36197906246e5d5554"
+    }
+}

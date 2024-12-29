@@ -18,6 +18,11 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Tables\Filters\Filter;
+use Filament\Tables\Actions\Action;
+use Illuminate\Support\Collection;
+use App\Filament\Exports\SupplyExporter;
+use Filament\Tables\Actions\ExportBulkAction;
+use Filament\Tables\Actions\BulkAction;
 
 class SupplyResource extends Resource
 {
@@ -128,18 +133,80 @@ class SupplyResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make()->label('Изменить'),
-                Tables\Actions\ViewAction::make()->label('Просмотр'),
+                //test
+                Tables\Actions\Action::make('pdf')
+                    ->label('PDF')
+                    ->color('success')
+                    ->icon('heroicon-o-arrow-down-on-square')
+                    ->url(fn (Supply $record) => route('supply.pdf', $record))
+                    ->openUrlInNewTab(),
+
+
             ])
             ->headerActions([
                 ImportAction::make()
                     ->label('Импорт CSV')
-                    ->importer(SupplyImporter::class), // Класс импортера
+                    ->importer(SupplyImporter::class) // Класс импортера
+                    ->icon('heroicon-o-arrow-down-on-square') // Иконка для импорта
+                    ->color('primary'), // Устанавливаем основной цвет кнопки,
+            ])
+            ->filters([
+                Filter::make('date_and_invoice')
+                    ->label('Фильтр по дате и номеру счета')
+                    ->form([
+                        DatePicker::make('date_from')
+                            ->label('С даты')
+                            ->reactive(), // Делаем поле реактивным
+                        DatePicker::make('date_to')
+                            ->label('До даты')
+                            ->reactive(), // Делаем поле реактивным
+                        Select::make('invoice_number')
+                            ->label('Номер счета')
+                            ->reactive() // Выпадающий список тоже реактивный
+                            ->options(function (callable $get) {
+                                $query = Supply::query();
+
+                                // Учитываем диапазон дат
+                                if ($get('date_from')) {
+                                    $query->where('date', '>=', $get('date_from'));
+                                }
+
+                                if ($get('date_to')) {
+                                    $query->where('date', '<=', $get('date_to'));
+                                }
+
+                                return $query->pluck('invoice_number', 'invoice_number')->toArray();
+                            })
+                            ->placeholder('Все счета'),
+                    ])
+                    ->query(function (Builder $query, array $data) {
+                        return $query
+                            ->when($data['date_from'], fn ($query, $date) => $query->where('date', '>=', $date))
+                            ->when($data['date_to'], fn ($query, $date) => $query->where('date', '<=', $date))
+                            ->when($data['invoice_number'], fn ($query, $invoice) => $query->where('invoice_number', $invoice));
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+//                ExportBulkAction::make()
+//                    ->exporter(SupplyExporter::class)
+//                    ->label('Экспортировать выбранные')
+//                    ->icon('heroicon-o-arrow-up-on-square'),
+
+                BulkAction::make('exportSelected')
+                    ->label('Экспортировать выбранные накладные')
+                    ->action(function (Collection $records) {
+                        $selectedIds = $records->pluck('id')->toArray();
+
+                        // Сохранение ID выбранных записей в сессии
+                        session(['selected_ids' => $selectedIds]);
+                    })
+                    ->requiresConfirmation()
+                    ->icon('heroicon-o-arrow-up-on-square'),
+
+        ]);
     }
 
     public static function getRelations(): array
