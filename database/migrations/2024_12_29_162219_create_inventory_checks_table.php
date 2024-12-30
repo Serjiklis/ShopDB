@@ -12,7 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('inventory_checks', function (Blueprint $table) {
-            $table->id();
+            $table->id('CheckID');
+            $table->string('Article', 50);
+            $table->date('Date');
+            $table->integer('CountedStock');
+            $table->foreign('Article')->references('article')->on('products')->cascadeOnDelete();
             $table->timestamps();
         });
     }
