@@ -21,8 +21,9 @@ class Product extends Model
         return $this->hasMany(Supply::class, 'article', 'article');
     }
 
-    public function inventory_checks(): HasOne
+    public function inventoryChecks(): HasMany
     {
-        return $this->hasOne(InventoryCheck::class, 'article', 'article');
+        return $this->hasMany(InventoryCheck::class, 'Article', 'article');
     }
+
 }

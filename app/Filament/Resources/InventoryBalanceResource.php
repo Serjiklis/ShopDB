@@ -9,10 +9,12 @@ use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Filament\Tables\Actions\Action;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
@@ -51,6 +53,40 @@ class InventoryBalanceResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+            ])
+            ->headerActions([
+                Action::make('calculateSales')
+                    ->label('Рассчитать продажи')
+                    ->color('success')
+                    ->icon('heroicon-o-calculator')
+                    ->action(function () {
+                        // Вызов метода расчета из контроллера
+                        app(\App\Http\Controllers\InventoryController::class)->calculateSales();
+
+                        // Уведомление
+                        Notification::make()
+                            ->title('Расчет успешно выполнен!')
+                            ->success()
+                            ->send();
+                    })
+                    ->requiresConfirmation('Вы уверены, что хотите выполнить расчет?')
+                    ->button(),
+                Action::make('rollbackSales')
+                    ->label('Откатить изменения')
+                    ->color('danger')
+                    ->icon('heroicon-m-arrow-uturn-left')
+                    ->action(function () {
+                        // Вызов метода отката из контроллера
+                        app(\App\Http\Controllers\InventoryController::class)->rollbackSales();
+
+                        // Уведомление
+                        Notification::make()
+                            ->title('Откат успешно выполнен!')
+                            ->success()
+                            ->send();
+                    })
+                    ->requiresConfirmation('Вы уверены, что хотите откатить изменения?')
+                    ->button(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
