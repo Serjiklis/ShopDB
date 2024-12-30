@@ -13,4 +13,21 @@ class Sale extends Model
     {
         return $this->belongsTo(Product::class, 'Article', 'article');
     }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($sale) {
+            // Получаем цену за единицу из товара, если не указана
+            if (!$sale->PricePerUnit) {
+                $product = Product::where('article', $sale->Article)->first();
+                $sale->PricePerUnit = $product->retail_price ?? 0;
+            }
+
+            // Рассчитываем общую сумму
+            $sale->TotalPrice = $sale->QuantitySold * $sale->PricePerUnit;
+        });
+    }
+
 }
