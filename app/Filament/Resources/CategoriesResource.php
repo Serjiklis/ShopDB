@@ -43,17 +43,23 @@ class CategoriesResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('name'),
-                TextInput::make('description'),
+                TextInput::make('name')
+                    ->label('Наименование'),
+                TextInput::make('description')
+                    ->label('Описание'),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
+            ->description('каждый товар должен иметь категорию')
             ->columns([
-                TextColumn::make('name'),
-                TextColumn::make('description'),
+                TextColumn::make('name')
+                    ->label('Наименование'),
+                TextColumn::make('description')
+                    ->label('Описание')
+                    ->toggleable(),
             ])
             ->filters([
                 //

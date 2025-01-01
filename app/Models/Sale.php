@@ -30,4 +30,6 @@ class Sale extends Model
         });
     }
 
+
+
 }

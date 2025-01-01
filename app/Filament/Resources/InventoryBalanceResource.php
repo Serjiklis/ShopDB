@@ -24,6 +24,21 @@ class InventoryBalanceResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    public static function getModelLabel(): string
+    {
+        return 'Остатки товара'; // Единичное название
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return 'Остатки товаров'; // Множественное название
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return 'Остатки товаров'; // Название в навигации
+    }
+
     public static function form(Form $form): Form
     {
         return $form

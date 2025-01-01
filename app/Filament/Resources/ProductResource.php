@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Imports\ProductImporter;
 use Filament\Tables\Actions\ImportAction;
 use Illuminate\Support\Facades\Storage;
+use Filament\Tables\Actions\RestoreAction;
 
 
 class ProductResource extends Resource
@@ -40,7 +41,7 @@ class ProductResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return 'Товары';
+        return 'Справочник';
     }
 
 
@@ -84,6 +85,7 @@ class ProductResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make()->label('Изменить'),
+
             ])
             ->headerActions([
                 ImportAction::make()

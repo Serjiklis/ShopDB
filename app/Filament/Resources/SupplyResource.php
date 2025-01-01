@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Imports\SupplyImporter;
 use App\Filament\Resources\SupplyResource\Pages;
 use App\Filament\Resources\SupplyResource\RelationManagers;
+use App\Models\Product;
 use App\Models\Supply;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
@@ -55,17 +56,35 @@ class SupplyResource extends Resource
                     ->label('Номер счета')
                     ->required()
                     ->maxLength(50),
-                TextInput::make('article')
-                    ->label('Артикул')
-                    ->required()
-                    ->maxLength(50),
+                Select::make('article')
+                    ->label('Артикул / Наименование')
+                    ->options(function () {
+                        return Product::query()
+                            ->select(['article', 'name'])
+                            ->get()
+                            ->mapWithKeys(function ($product) {
+                                return [$product->article => "{$product->article} - {$product->name}"];
+                            })
+                            ->toArray();
+                    })
+                    ->searchable()
+                    ->reactive()
+                    ->afterStateUpdated(function ($state, callable $set) {
+                        $product = Product::where('article', $state)->first();
+                        $set('PricePerUnit', $product->retail_price ?? 0); // Устанавливаем цену
+                    })
+                    ->dehydrateStateUsing(fn ($state) => $state) // Явно сохраняем в 'Article'
+                    ->required(),
                 TextInput::make('quantity')
                     ->label('Количество')
                     ->numeric()
                     ->required(),
                 TextInput::make('price')
+                    ->label('Цена за единицу')
                     ->numeric()
-                    ->inputMode('decimal'),
+                    ->inputMode('decimal')
+                    ->reactive()
+                    ->required(),
             ]);
     }
 
@@ -81,9 +100,11 @@ class SupplyResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('invoice_number')
                     ->label('Номер счета')
+                    ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('article')
                     ->label('Артикул')
+                    ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('product.name')
                     ->label('Наименование товара') // Отображаем наименование через связь

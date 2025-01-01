@@ -32,7 +32,7 @@ class SaleResource extends Resource
                 DatePicker::make('SaleDate')
                     ->label('Дата продажи')
                     ->required(),
-                Select::make('article')
+                Select::make('Article')
                     ->label('Артикул / Наименование')
                     ->options(function () {
                          return Product::query()
@@ -49,6 +49,7 @@ class SaleResource extends Resource
                         $product = Product::where('article', $state)->first();
                         $set('PricePerUnit', $product->retail_price ?? 0); // Устанавливаем цену
                     })
+                    ->dehydrateStateUsing(fn ($state) => $state) // Явно сохраняем в 'Article'
                     ->required(),
 
                 TextInput::make('PricePerUnit')
@@ -77,11 +78,30 @@ class SaleResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('Article')->label('Артикул'),
-                TextColumn::make('product.name')->label('Наименование'),
-                TextColumn::make('QuantitySold')->label('Количество'),
-                TextColumn::make('PricePerUnit')->label('Цена за единицу'),
-                TextColumn::make('TotalPrice')->label('Итоговая сумма'),
+                TextColumn::make('SaleDate')
+                    ->label('Sale Date')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(),
+                TextColumn::make('Article')
+                    ->label('Артикул')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(),
+                TextColumn::make('product.name')
+                    ->label('Наименование')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(),
+                TextColumn::make('QuantitySold')
+                    ->label('Количество')
+                    ->toggleable(),
+                TextColumn::make('PricePerUnit')
+                    ->label('Цена за единицу')
+                    ->toggleable(),
+                TextColumn::make('TotalPrice')
+                    ->label('Итоговая сумма')
+                    ->toggleable(),
             ])
             ->filters([
                 Filter::make('date')
