@@ -86,4 +86,10 @@ return [
 
     'livewire_loading_delay' => 'default',
 
-];
+    //Language
+    'panels' => [
+        'default' => [
+            'defaultLocale' => 'ru',
+                    ]
+                ],
+        ];

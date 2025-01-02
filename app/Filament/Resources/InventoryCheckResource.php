@@ -22,7 +22,12 @@ class InventoryCheckResource extends Resource
 {
     protected static ?string $model = InventoryCheck::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-c-clipboard-document';
+
+    public static function getNavigationGroup(): ?string
+    {
+        return 'Операции';
+    }
 
     public static function getModelLabel(): string
     {
@@ -45,13 +50,13 @@ class InventoryCheckResource extends Resource
         return $form
             ->schema([
                 TextInput::make('Article')
-                    ->label('Article')
+                    ->label('Артикул')
                     ->required(),
                 DatePicker::make('Date')
-                    ->label('Date')
+                    ->label('Дата')
                     ->required(),
                 TextInput::make('CountedStock')
-                    ->label('Counted Stock')
+                    ->label('Количество')
                     ->numeric()
                     ->required(),
             ]);

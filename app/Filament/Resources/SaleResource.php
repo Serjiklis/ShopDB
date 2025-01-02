@@ -23,8 +23,27 @@ class SaleResource extends Resource
 {
     protected static ?string $model = Sale::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-c-document-currency-dollar';
 
+    public static function getNavigationGroup(): ?string
+    {
+        return 'Операции';
+    }
+
+    public static function getModelLabel(): string
+    {
+        return 'Продажа'; // Единичное название
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return 'Продажи'; // Множественное название
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return 'Продажи'; // Название в навигации
+    }
     public static function form(Form $form): Form
     {
         return $form
@@ -79,7 +98,7 @@ class SaleResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('SaleDate')
-                    ->label('Sale Date')
+                    ->label('Дата продажи')
                     ->sortable()
                     ->searchable()
                     ->toggleable(),

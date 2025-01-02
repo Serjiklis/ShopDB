@@ -22,7 +22,12 @@ class InventoryBalanceResource extends Resource
 {
     protected static ?string $model = InventoryBalance::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-m-clipboard-document-list';
+
+    public static function getNavigationGroup(): ?string
+    {
+        return 'Операции';
+    }
 
     public static function getModelLabel(): string
     {
@@ -59,9 +64,29 @@ class InventoryBalanceResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('Article')->label('Артикул'),
-                TextColumn::make('product.name')->label('Наименование товара'),
-                TextColumn::make('StockCount')->label('Остаток')->sortable(),
+                TextColumn::make('Article')
+                    ->label('Артикул')
+                    ->toggleable()
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('product.name')
+                    ->label('Наименование товара')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('category.name') // Используем связь с категорией
+                ->label('Категория')
+                    ->toggleable(),
+                TextColumn::make('StockCount')
+                    ->label('Остаток')
+                    ->sortable(),
+                TextColumn::make('created_at')
+                    ->label('Создано')
+                    ->sortable()
+                    ->toggleable(),
+                TextColumn::make('updated_at')
+                    ->label('Обновлено')
+                    ->sortable()
+                    ->toggleable(),
             ])
             ->filters([
                 //

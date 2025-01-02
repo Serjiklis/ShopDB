@@ -19,10 +19,12 @@ class CategoriesResource extends Resource
 {
     protected static ?string $model = Category::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-folder';
 
-
-
+    public static function getNavigationGroup(): ?string
+    {
+        return 'Товары';
+    }
     public static function getModelLabel(): string
     {
         return 'Категория';
@@ -55,6 +57,9 @@ class CategoriesResource extends Resource
         return $table
             ->description('каждый товар должен иметь категорию')
             ->columns([
+                TextColumn::make('id')
+                    ->label('ID')
+                    ->toggleable(),
                 TextColumn::make('name')
                     ->label('Наименование'),
                 TextColumn::make('description')

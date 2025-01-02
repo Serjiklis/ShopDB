@@ -30,6 +30,12 @@ class SupplyResource extends Resource
     protected static ?string $model = Supply::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-truck';
+
+    public static function getNavigationGroup(): ?string
+    {
+        return 'Операции';
+    }
+
     public static function getModelLabel(): string
     {
         return 'Поставка'; // Единичное название
@@ -71,7 +77,7 @@ class SupplyResource extends Resource
                     ->reactive()
                     ->afterStateUpdated(function ($state, callable $set) {
                         $product = Product::where('article', $state)->first();
-                        $set('PricePerUnit', $product->retail_price ?? 0); // Устанавливаем цену
+                        $set('price', $product->retail_price ?? 0); // Устанавливаем цену
                     })
                     ->dehydrateStateUsing(fn ($state) => $state) // Явно сохраняем в 'Article'
                     ->required(),
@@ -79,6 +85,7 @@ class SupplyResource extends Resource
                     ->label('Количество')
                     ->numeric()
                     ->required(),
+
                 TextInput::make('price')
                     ->label('Цена за единицу')
                     ->numeric()
@@ -94,27 +101,33 @@ class SupplyResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('id')
                     ->label('ID')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('date')
                     ->label('Дата поставки')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('invoice_number')
                     ->label('Номер счета')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('article')
                     ->label('Артикул')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('product.name')
                     ->label('Наименование товара') // Отображаем наименование через связь
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('quantity')
                     ->label('Количество')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('price')
                     ->label('Цена')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
             ])
             ->filters([
                 Filter::make('date_and_invoice')

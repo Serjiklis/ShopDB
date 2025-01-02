@@ -26,4 +26,18 @@ class Product extends Model
         return $this->hasMany(InventoryCheck::class, 'Article', 'article');
     }
 
+    public static function generateArticleForCategory($categoryId)
+    {
+        // Ищем максимальный артикул именно в рамках переданной категории
+        $maxArticle = Product::where('category_id', $categoryId)
+            ->selectRaw('CAST(MAX(CAST(article AS UNSIGNED)) AS UNSIGNED) as max_article')
+            ->value('max_article');
+
+        // Если что-то нашлось – увеличиваем на 1,
+        // иначе начинаем с условного 25001 (или любого стартового числа)
+        $nextArticle = $maxArticle ? $maxArticle + 1 : 25001;
+
+        return $nextArticle;
+    }
+
 }

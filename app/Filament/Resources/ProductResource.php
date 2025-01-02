@@ -27,11 +27,16 @@ class ProductResource extends Resource
 {
     protected static ?string $model = Product::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-shopping-cart';
+    protected static ?string $navigationIcon = 'heroicon-o-globe-americas';
 
+    public static function getNavigationGroup(): ?string
+    {
+        return 'Товары';
+    }
     public static function getModelLabel(): string
     {
         return 'Товар';
+
     }
 
     public static function getPluralModelLabel(): string
@@ -49,17 +54,35 @@ class ProductResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('article'),
-                TextInput::make('name'),
+                TextInput::make('article')
+                    ->label('Артикул'),
+                TextInput::make('name')
+                    ->label('Наименование'),
                 Select::make('category_id')
-                    ->label('Category')
+                    ->label('Категория')
                     ->options(\App\Models\Category::pluck('name', 'id')->toArray())
                     ->searchable()
-                    ->required(),
+                    ->required()
+                    ->reactive()
+                    ->afterStateUpdated(function ($state, callable $set) {
+                        if ($state) {
+                            logger('afterStateUpdated вызван для категории:', ['category_id' => $state]);
+
+                            // Генерируем артикул для выбранной категории
+                            $nextArticle = Product::generateArticleForCategory($state);
+                            logger('Сгенерированный артикул:', ['article' => $nextArticle]);
+
+                            $set('article', $nextArticle);
+                        } else {
+                            logger('afterStateUpdated: категория не выбрана.');
+                        }
+                    }),
         TextInput::make('purchase_price')
+                    ->label('Закупочная цен')
                     ->numeric()
                     ->inputMode('decimal'),
                 TextInput::make('retail_price')
+                    ->label('Розничная цена')
                     ->numeric()
                     ->inputMode('decimal'),
 
@@ -71,12 +94,15 @@ class ProductResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('article')->label('Артикул')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('name')->label('Наименование')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('category.name') // Используем связь с категорией
                 ->label('Категория')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('purchase_price')->label('Закупочная цена'),
                 TextColumn::make('retail_price')->label('Розничная цена'),
             ])
