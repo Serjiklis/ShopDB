@@ -9,6 +9,10 @@ class Supply extends Model
 {
     protected $fillable = ['date', 'invoice_number', 'article', 'quantity', 'price'];
 
+    protected $casts = [
+        'date' => 'datetime',
+    ];
+
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class, 'article', 'article');

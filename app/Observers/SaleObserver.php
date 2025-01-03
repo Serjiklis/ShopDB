@@ -36,7 +36,31 @@ class SaleObserver
      */
     public function updated(Sale $sale): void
     {
-        //
+        // Смотрим, изменилось ли количество
+        $originalQuantity = $sale->getOriginal('QuantitySold'); // до обновления
+        $newQuantity = $sale->QuantitySold;                     // после обновления
+
+        // Если количество не менялось, ничего не делаем
+        if ($originalQuantity === $newQuantity) {
+            return;
+        }
+
+        // Ищем остаток
+        $inventory = InventoryBalance::where('Article', $sale->Article)->first();
+        if (! $inventory) {
+            return;
+        }
+
+        // Считаем разницу
+        $difference = $newQuantity - $originalQuantity;
+        // Если difference > 0, значит продали больше, нужно ещё списать
+        // Если difference < 0, значит продали меньше, нужно вернуть на склад
+        $inventory->StockCount -= $difference;
+        // min(10 - (difference=2)) => 8
+        // min(10 - (difference=-2)) => 12
+
+        $inventory->save();
+
     }
 
     /**
@@ -44,7 +68,15 @@ class SaleObserver
      */
     public function deleted(Sale $sale): void
     {
-        //
+        // Возвращаем на склад всё проданное по этой продаже
+        $inventory = InventoryBalance::where('Article', $sale->Article)->first();
+        if (! $inventory) {
+            return;
+        }
+
+        // Раз удаляем продажу, значит нужно "вернуть" товар на склад
+        $inventory->StockCount += $sale->QuantitySold;
+        $inventory->save();
     }
 
     /**
