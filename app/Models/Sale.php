@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Sale extends Model
 {
     protected $fillable = ['Article', 'QuantitySold', 'SaleDate', 'TotalPrice'];
+    protected $casts = [
+        'SaleDate' => 'datetime',
+    ];
 
     public function product(): BelongsTo
     {

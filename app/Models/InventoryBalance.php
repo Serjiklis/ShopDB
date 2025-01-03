@@ -7,7 +7,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class InventoryBalance extends Model
 {
-    protected $fillable = ['Article', 'StockCount'];
+    protected $fillable = [
+        'Article',
+        'StockCount',
+        'category_id',
+        'last_calculated_at',
+    ];
+
+    protected $casts = [
+        'last_calculated_at' => 'datetime',
+    ];
 
     public function product(): BelongsTo
     {
