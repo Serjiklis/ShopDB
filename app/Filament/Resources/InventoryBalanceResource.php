@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\InventoryBalanceResource\Pages;
 use App\Filament\Resources\InventoryBalanceResource\RelationManagers;
+use App\Http\Controllers\InventoryController;
 use App\Models\InventoryBalance;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
@@ -75,6 +76,8 @@ class InventoryBalanceResource extends Resource
                     ->searchable(),
                 TextColumn::make('category.name') // Используем связь с категорией
                 ->label('Категория')
+                    ->sortable()
+                    ->searchable()
                     ->toggleable(),
                 TextColumn::make('StockCount')
                     ->label('Остаток')
@@ -127,11 +130,13 @@ class InventoryBalanceResource extends Resource
                     })
                     ->requiresConfirmation('Вы уверены, что хотите откатить изменения?')
                     ->button(),
+
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
+
             ]);
     }
 

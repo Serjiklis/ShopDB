@@ -18,6 +18,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Tables\Filters\Filter;
+use Carbon\Carbon;
 
 class SaleResource extends Resource
 {
@@ -50,6 +51,7 @@ class SaleResource extends Resource
             ->schema([
                 DatePicker::make('SaleDate')
                     ->label('Дата продажи')
+                    ->default(Carbon::now())
                     ->required(),
                 Select::make('Article')
                     ->label('Артикул / Наименование')

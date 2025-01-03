@@ -24,6 +24,7 @@ use Illuminate\Support\Collection;
 use App\Filament\Exports\SupplyExporter;
 use Filament\Tables\Actions\ExportBulkAction;
 use Filament\Tables\Actions\BulkAction;
+use Carbon\Carbon;
 
 class SupplyResource extends Resource
 {
@@ -57,9 +58,10 @@ class SupplyResource extends Resource
             ->schema([
                 DatePicker::make('date')
                     ->label('Дата')
+                    ->default(Carbon::now())
                     ->required(),
                 TextInput::make('invoice_number')
-                    ->label('Номер счета')
+                    ->label('Номер накладной')
                     ->required()
                     ->maxLength(50),
                 Select::make('article')
@@ -108,7 +110,7 @@ class SupplyResource extends Resource
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('invoice_number')
-                    ->label('Номер счета')
+                    ->label('Номер накладной')
                     ->sortable()
                     ->searchable()
                     ->toggleable(),

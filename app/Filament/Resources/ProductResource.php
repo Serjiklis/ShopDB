@@ -95,16 +95,21 @@ class ProductResource extends Resource
             ->columns([
                 TextColumn::make('article')->label('Артикул')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('name')->label('Наименование')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('category.name') // Используем связь с категорией
                 ->label('Категория')
                     ->searchable()
-                    ->sortable(),
-                TextColumn::make('purchase_price')->label('Закупочная цена'),
-                TextColumn::make('retail_price')->label('Розничная цена'),
+                    ->sortable()
+                    ->toggleable(),
+                TextColumn::make('purchase_price')->label('Закупочная цена')
+                    ->toggleable(),
+                TextColumn::make('retail_price')->label('Розничная цена')
+                    ->toggleable(),
             ])
             ->filters([
                 //

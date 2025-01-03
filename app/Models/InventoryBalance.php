@@ -36,4 +36,5 @@ class InventoryBalance extends Model
             }
         });
     }
+
 }

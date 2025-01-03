@@ -60,4 +60,6 @@ class InventoryController extends Controller
             throw $e;
         }
     }
+
+
 }
