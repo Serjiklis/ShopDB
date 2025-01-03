@@ -31,7 +31,24 @@ class SupplyObserver
      */
     public function updated(Supply $supply): void
     {
-        //
+        $originalQuantity = $supply->getOriginal('quantity');
+        $newQuantity = $supply->quantity;
+
+        if ($originalQuantity === $newQuantity) {
+            return;
+        }
+
+        $inventory = InventoryBalance::where('Article', $supply->article)->first();
+        if (! $inventory) {
+            return;
+        }
+
+        // Разница: если > 0, значит увеличили количество поставки
+        // если < 0, значит уменьшили
+        $difference = $newQuantity - $originalQuantity;
+        $inventory->StockCount += $difference;
+
+        $inventory->save();
     }
 
     /**
@@ -39,7 +56,14 @@ class SupplyObserver
      */
     public function deleted(Supply $supply): void
     {
-        //
+        $inventory = InventoryBalance::where('Article', $supply->article)->first();
+        if (! $inventory) {
+            return;
+        }
+
+        // Раз удаляем поставку, надо "вычесть" то, что ранее приходили
+        $inventory->StockCount -= $supply->quantity;
+        $inventory->save();
     }
 
     /**
