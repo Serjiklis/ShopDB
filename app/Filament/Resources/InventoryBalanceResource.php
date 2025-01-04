@@ -13,7 +13,9 @@ use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Filament\Tables\Actions\Action;
 use Illuminate\Database\Eloquent\Builder;
@@ -82,7 +84,16 @@ class InventoryBalanceResource extends Resource
                 TextColumn::make('StockCount')
                     ->label('Остаток')
                     ->sortable(),
-                TextColumn::make('created_at')
+                IconColumn::make('is_discrepancy')
+                    ->label('Расхождение')
+                    ->boolean() // для автоматической логики "true/false"
+                    ->trueIcon('heroicon-o-exclamation-triangle')
+                    ->falseIcon('heroicon-o-check-circle')
+                    ->color(function ($state) {
+                        return $state ? 'danger' : 'success';
+                    })
+                    ->sortable(),
+        TextColumn::make('created_at')
                     ->label('Создано')
                     ->sortable()
                     ->toggleable(),
@@ -92,7 +103,11 @@ class InventoryBalanceResource extends Resource
                     ->toggleable(),
             ])
             ->filters([
-                //
+                SelectFilter::make('category')
+                    ->label('Категория')
+                    ->relationship('category', 'name') // связь с категорией
+                    ->preload()
+                    ->multiple()
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

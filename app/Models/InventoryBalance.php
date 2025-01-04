@@ -12,10 +12,12 @@ class InventoryBalance extends Model
         'StockCount',
         'category_id',
         'last_calculated_at',
+        'is_discrepancy',
     ];
 
     protected $casts = [
         'last_calculated_at' => 'datetime',
+        'is_discrepancy' => 'boolean',
     ];
 
     public function product(): BelongsTo

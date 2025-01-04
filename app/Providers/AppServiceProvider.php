@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\InventoryBalance;
 use App\Models\Sale;
 use App\Models\Supply;
+use App\Observers\InventoryBalanceObserver;
 use App\Observers\SaleObserver;
 use App\Observers\SupplyObserver;
 use Filament\Facades\Filament;
@@ -26,5 +28,6 @@ class AppServiceProvider extends ServiceProvider
     {
         Sale::observe(SaleObserver::class);
         Supply::observe(SupplyObserver::class);
+        InventoryBalance::observe(InventoryBalanceObserver::class);
     }
 }

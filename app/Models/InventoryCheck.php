@@ -11,7 +11,13 @@ class InventoryCheck extends Model
 
     protected $primaryKey = 'CheckID';
 
-    protected $fillable = ['Article', 'Date', 'CountedStock'];
+    protected $fillable = ['Article', 'Date', 'CountedStock','is_calculated', 'calculated_at'];
+
+    protected $casts = [
+        'Date' => 'date',
+        'is_calculated' => 'boolean',
+        'calculated_at' => 'datetime',
+    ];
 
     /**
      * Relationship with Product.
