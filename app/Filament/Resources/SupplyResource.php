@@ -107,6 +107,7 @@ class SupplyResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('date')
                     ->label('Дата поставки')
+                    ->date('d/m/Y')
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('invoice_number')
@@ -142,6 +143,7 @@ class SupplyResource extends Resource
                             ->label('До даты')
                             ->reactive(), // Делаем поле реактивным
                         Select::make('invoice_number')
+
                             ->label('Номер счета')
                             ->reactive() // Выпадающий список тоже реактивный
                             ->options(function (callable $get) {

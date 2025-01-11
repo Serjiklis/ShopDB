@@ -95,10 +95,12 @@ class InventoryBalanceResource extends Resource
                     ->sortable(),
         TextColumn::make('created_at')
                     ->label('Создано')
+                    ->date('d/m/Y')
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make('updated_at')
                     ->label('Обновлено')
+                    ->date('d/m/Y')
                     ->sortable()
                     ->toggleable(),
             ])

@@ -7,12 +7,15 @@ use Filament\Widgets\ChartWidget;
 
 class SalesVolumeChart extends ChartWidget
 {
+
+
     protected static ?string $heading = 'Объём продаж';
 
     protected static ?int $sort = 3;
 
     protected function getData(): array
     {
+
         // Группируем продажи по дате и рассчитываем общий объём
         $sales = Sale::selectRaw('DATE(SaleDate) as date, SUM(QuantitySold) as total_sales')
             ->groupBy('date')

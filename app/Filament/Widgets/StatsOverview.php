@@ -2,14 +2,22 @@
 
 namespace App\Filament\Widgets;
 
+use App\Models\Sale;
+use App\Models\Supply;
+use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Illuminate\Database\Query\Builder;
+use Carbon\CarbonImmutable;
 
 class StatsOverview extends BaseWidget
 {
+    use InteractsWithPageFilters;
+
     protected static ?int $sort = 2;
     protected function getStats(): array
     {
+
         return [
             Stat::make('Общий объём продаж', $this->getTotalSales())
                 ->description('За текущий период')
@@ -29,24 +37,45 @@ class StatsOverview extends BaseWidget
                 ->color('danger'),
         ];
     }
+    private function applyDateFilters($query, $dateColumn): void
+    {
+        $startDate = $this->filters['startDate'] ?? null;
+        $endDate = $this->filters['endDate'] ?? null;
+
+        $query->when($startDate, fn ($query) => $query->whereDate($dateColumn, '>=', $startDate))
+            ->when($endDate, fn ($query) => $query->whereDate($dateColumn, '<=', $endDate));
+    }
 
     private function getTotalSales(): string
     {
-        // Пример логики: извлекаем общую сумму продаж из таблицы sales
-        return \App\Models\Sale::sum('TotalPrice') . ' ₽';
+
+        $query = Sale::query();
+        $this->applyDateFilters($query, 'SaleDate');
+
+        return $query->sum('TotalPrice') . ' ₽';
+
     }
     private function getTotalSupplies(): string
     {
-        // Пример логики: общая сумма поставок из таблицы supplies
-        return \App\Models\Supply::sum('price') . ' ₽';
+        $query = Supply::query();
+        $this->applyDateFilters($query, 'date');
+
+        return $query->sum('price') . ' ₽';
+
     }
 
     private function getGrossProfit(): string
     {
-        // Пример расчёта валового дохода: продажи минус поставки
-        $totalSales = \App\Models\Sale::sum('TotalPrice');
-        $totalSupplies = \App\Models\Supply::sum('price');
-        return ($totalSales - $totalSupplies) . ' ₽';
+        $salesQuery = Sale::query();
+        $this->applyDateFilters($salesQuery, 'SaleDate');
+        $totalSales = $salesQuery->sum('TotalPrice');
+
+        $suppliesQuery = Supply::query();
+        $this->applyDateFilters($suppliesQuery, 'date');
+        $totalSupplies = $suppliesQuery->sum('price');
+
+
+        return  $grossProfit = $totalSales - $totalSupplies;
     }
 
     private function getDiscrepancyCount(): int

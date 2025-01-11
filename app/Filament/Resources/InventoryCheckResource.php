@@ -79,6 +79,7 @@ class InventoryCheckResource extends Resource
                     ->sortable(),
                 TextColumn::make('Date')
                     ->label('Date')
+                    ->date('d/m/Y')
                     ->sortable(),
                 TextColumn::make('CountedStock')
                     ->label('Counted Stock')

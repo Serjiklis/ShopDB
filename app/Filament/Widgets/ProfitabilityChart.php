@@ -15,6 +15,7 @@ class ProfitabilityChart extends ChartWidget
         $profitData = Product::join('sales', 'products.article', '=', 'sales.Article')
             ->selectRaw('products.category_id, SUM(sales.TotalPrice - (sales.QuantitySold * products.purchase_price)) as profit')
             ->groupBy('products.category_id')
+            ->orderBy('profit', 'desc')
             ->get();
 
         return [
@@ -31,6 +32,6 @@ class ProfitabilityChart extends ChartWidget
 
     protected function getType(): string
     {
-        return 'line';
+        return 'bar';
     }
 }

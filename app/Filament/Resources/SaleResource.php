@@ -101,6 +101,7 @@ class SaleResource extends Resource
             ->columns([
                 TextColumn::make('SaleDate')
                     ->label('Дата продажи')
+                    ->date('d/m/Y')
                     ->sortable()
                     ->searchable()
                     ->toggleable(),
@@ -127,8 +128,10 @@ class SaleResource extends Resource
             ->filters([
                 Filter::make('date')
                     ->form([
-                        DatePicker::make('from'),
-                        DatePicker::make('to'),
+                        DatePicker::make('from')
+                            ->date('d/m/Y'),
+                        DatePicker::make('to')
+                            ->date('d/m/Y'),
                     ])
                     ->query(fn (Builder $query, array $data) => $query
                         ->when($data['from'], fn ($query, $date) => $query->where('SaleDate', '>=', $date))
