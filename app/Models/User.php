@@ -50,9 +50,7 @@ class User extends Authenticatable implements FilamentUser
 
     public function canAccessPanel(Panel $panel): bool
     {
-        // Условие доступа к панели:
-        // 1. Email пользователя заканчивается на "@yourdomain.com".
-        // 2. Email пользователя подтверждён (verified).
-        return str_ends_with($this->email, '@test.com') && $this->hasVerifiedEmail();
+
+        return true;
     }
 }
