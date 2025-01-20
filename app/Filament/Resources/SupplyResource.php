@@ -68,10 +68,10 @@ class SupplyResource extends Resource
                     ->label('Артикул / Наименование')
                     ->options(function () {
                         return Product::query()
-                            ->select(['article', 'name'])
+                            ->select(['article', 'name','purchase_price'])
                             ->get()
                             ->mapWithKeys(function ($product) {
-                                return [$product->article => "{$product->article} - {$product->name}"];
+                                return [$product->article => "{$product->article} - {$product->name} "];
                             })
                             ->toArray();
                     })
@@ -80,9 +80,16 @@ class SupplyResource extends Resource
                     ->afterStateUpdated(function ($state, callable $set) {
                         $product = Product::where('article', $state)->first();
                         $set('price', $product->retail_price ?? 0); // Устанавливаем цену
+                        $set('purchase_price', $product->purchase_price ?? 0);
                     })
                     ->dehydrateStateUsing(fn ($state) => $state) // Явно сохраняем в 'Article'
                     ->required(),
+                TextInput::make('purchase_price')
+                    ->label('Цена закупки')
+                    ->disabled()
+                    ->dehydrated(false) // Prevent saving to the database
+                    ->reactive(),
+
                 TextInput::make('quantity')
                     ->label('Количество')
                     ->numeric()
