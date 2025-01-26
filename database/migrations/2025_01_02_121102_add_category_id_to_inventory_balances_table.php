@@ -12,10 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('inventory_balances', function (Blueprint $table) {
-            Schema::table('inventory_balances', function (Blueprint $table) {
                 $table->unsignedBigInteger('category_id')->nullable()->after('StockCount'); // Add the category_id column
                 $table->foreign('category_id')->references('id')->on('categories')->cascadeOnDelete(); // Add foreign key
-            });
         });
     }
 

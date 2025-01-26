@@ -26,5 +26,8 @@ class InventoryCheck extends Model
     {
         return $this->belongsTo(Product::class, 'Article', 'article');
     }
-
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
+    }
 }

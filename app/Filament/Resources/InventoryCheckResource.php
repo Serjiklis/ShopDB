@@ -14,9 +14,14 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\ImportAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Filters\TernaryFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Tables\Actions\Action;
 
 class InventoryCheckResource extends Resource
 {
@@ -68,26 +73,63 @@ class InventoryCheckResource extends Resource
             ->columns([
                 TextColumn::make('CheckID')
                     ->label('Check ID')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('Article')
                     ->label('Article')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
                 TextColumn::make('product.name')
                     ->label('Наименование товара') // Отображаем наименование через связь
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('category.name') // Используем связь с категорией
+                ->label('Категория')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(),
                 TextColumn::make('Date')
                     ->label('Date')
                     ->date('d/m/Y')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('CountedStock')
                     ->label('Counted Stock')
                     ->sortable(),
+                IconColumn::make('is_calculated')
+                    ->label('Статус')
+                    ->boolean() // для автоматической логики "true/false"
+                    ->trueIcon('heroicon-o-check-circle')
+                    ->trueColor('success')
+                    ->falseIcon('heroicon-o-exclamation-circle')
+                    ->falseColor('warning')
+                    ->sortable()
+                    ->toggleable(),
             ])
             ->filters([
-                //
-            ])
+                Filter::make('Date')
+                    ->form([
+                        DatePicker::make('from')
+                            ->date('d/m/Y'),
+                        DatePicker::make('to')
+                            ->date('d/m/Y'),
+                    ])
+                    ->query(fn (Builder $query, array $data) => $query
+                        ->when($data['from'], fn ($query, $date) => $query->where('Date', '>=', $date))
+                        ->when($data['to'], fn ($query, $date) => $query->where('Date', '<=', $date))),
+                TernaryFilter::make('is_calculated')
+                ->label('Учтено'),
+                SelectFilter::make('category')
+                    ->label('Категория')
+                    ->relationship('category', 'name') // связь с категорией
+                    ->preload()
+                    ->multiple()
+            ])->filtersTriggerAction(
+                fn (Action $action) => $action
+                    ->button()
+                    ->label('Фильтр'),
+            )
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
