@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('inventory_balances', function (Blueprint $table) {
-                $table->boolean('is_discrepancy')->default(false)->after('StockCount');
+        Schema::table('products', function (Blueprint $table) {
+            $table->boolean('is_active')->default(true)->after('retail_price');
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('inventory_balances', function (Blueprint $table) {
-                $table->dropColumn('is_discrepancy');
+        Schema::table('products', function (Blueprint $table) {
+            $table->dropColumn('is_active');
         });
     }
 };

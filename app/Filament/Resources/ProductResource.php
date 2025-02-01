@@ -10,10 +10,13 @@ use Filament\Actions\Imports\ImportColumn;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -21,6 +24,7 @@ use App\Filament\Imports\ProductImporter;
 use Filament\Tables\Actions\ImportAction;
 use Illuminate\Support\Facades\Storage;
 use Filament\Tables\Actions\RestoreAction;
+use Filament\Forms\Components\Tabs;
 
 
 class ProductResource extends Resource
@@ -54,6 +58,10 @@ class ProductResource extends Resource
     {
         return $form
             ->schema([
+                Tabs::make('Tabs')
+                    ->tabs([
+                        Tabs\Tab::make('Основные')
+                            ->schema([
                 TextInput::make('article')
                     ->label('Артикул'),
                 TextInput::make('name')
@@ -77,7 +85,7 @@ class ProductResource extends Resource
                             logger('afterStateUpdated: категория не выбрана.');
                         }
                     }),
-        TextInput::make('purchase_price')
+                TextInput::make('purchase_price')
                     ->label('Закупочная цен')
                     ->numeric()
                     ->inputMode('decimal'),
@@ -85,7 +93,16 @@ class ProductResource extends Resource
                     ->label('Розничная цена')
                     ->numeric()
                     ->inputMode('decimal'),
-
+                Toggle::make('is_active')
+                ->label('Вкл/Выкл')
+                    ->onColor('success')
+                    ->offColor('danger'),
+                            ])->columns(2),
+                        Tabs\Tab::make('Данные')
+                            ->schema([
+                                // ...
+                            ]),
+                        ])
             ]);
     }
 
@@ -110,9 +127,21 @@ class ProductResource extends Resource
                     ->toggleable(),
                 TextColumn::make('retail_price')->label('Розничная цена')
                     ->toggleable(),
+                IconColumn::make('is_active')
+                    ->label('Статус')
+                    ->boolean() // для автоматической логики "true/false"
+                    ->trueIcon('heroicon-o-check-circle')
+                    ->trueColor('success')
+                    ->falseIcon('heroicon-o-x-circle')
+                    ->falseColor('danger')
+                    ->sortable()
+                    ->toggleable(),
             ])
             ->filters([
-                //
+                TernaryFilter::make('is_active')
+                    ->label('Товары активны')
+                    ->default()
+
             ])
             ->actions([
                 Tables\Actions\EditAction::make()->label('Изменить'),
